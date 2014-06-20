@@ -325,7 +325,7 @@ $(document).ready(function () {
   var algolia = new AlgoliaSearch('55D6OYYP5R', '05fdaf769699705158b6385f861df4a0');
   var index = algolia.initIndex('french_cities');
 
-  var rawTemplate = '<div class="result-wrapper"><span class="icon-wrapper"><i class="icon"></i></span><span class="city">{{{_highlightResult.name.value}}}</span>&nbsp;<span class="country">{{{country}}}</span></div>';
+  var rawTemplate = '<div class="result-wrapper"><span class="city">{{{_highlightResult.name.value}}}</span>&nbsp;<span class="country">{{{country}}}</span><span class="icon-wrapper"><i class="icon {{{icon_css_class}}}"></i></span></div>';
   var template = Hogan.compile(rawTemplate);
   
   $(".search_form input[name=query]").typeahead(null, {
@@ -333,6 +333,7 @@ $(document).ready(function () {
     displayKey: 'name',
     templates: {
       suggestion: function(hit) {
+        hit["icon_css_class"] = hit._tags.indexOf("capital") !== -1 ? "icon-capital" : "";
         return template.render(hit);
       }
     }
