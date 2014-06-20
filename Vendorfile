@@ -3,11 +3,20 @@ folder 'vendor/assets' do
     file 'jquery.cookie.js', 'https://raw.github.com/carhartl/jquery-cookie/master/jquery.cookie.js'
     file 'jquery.throttle-debounce.js', 'https://raw.github.com/cowboy/jquery-throttle-debounce/v1.1/jquery.ba-throttle-debounce.js'
     file 'jquery.simulate.js', 'https://raw.github.com/jquery/jquery-ui/master/tests/jquery.simulate.js'
+    file 'jquery.typeahead.js', 'https://raw.githubusercontent.com/twitter/typeahead.js/master/dist/typeahead.jquery.js'
   end
 
   folder 'bootstrap' do
     file 'bootstrap.tooltip.js', 'https://raw.github.com/twbs/bootstrap/v2.3.2/js/bootstrap-tooltip.js'
     file 'bootstrap.dropdown.js', 'https://raw.github.com/twbs/bootstrap/v2.3.2/js/bootstrap-dropdown.js'
+  end
+
+  folder 'hogan' do
+    file 'hogan.js', 'https://twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js'
+  end
+
+  folder 'algolia' do
+    file 'algolia.js', 'https://raw.githubusercontent.com/algolia/algoliasearch-client-js/master/dist/algoliasearch.js'
   end
 
   folder 'leaflet' do

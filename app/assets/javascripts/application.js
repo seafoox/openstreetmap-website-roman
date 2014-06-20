@@ -3,6 +3,7 @@
 //= require jquery.timers
 //= require jquery.cookie
 //= require jquery.throttle-debounce
+//= require jquery.typeahead
 //= require bootstrap.tooltip
 //= require bootstrap.dropdown
 //= require augment
@@ -17,6 +18,8 @@
 //= require piwik
 //= require richtext
 //= require querystring
+//= require hogan
+//= require algoliasearch
 
 var querystring = require('querystring-component');
 
