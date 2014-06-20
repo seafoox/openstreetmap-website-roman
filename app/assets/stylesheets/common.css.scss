@@ -84,6 +84,29 @@ strong {
 
 .fillL { background-color: white; }
 
+/* MIXINS */
+
+// Retina images with SASS
+@mixin background-image-retina($file, $type, $width, $height) {
+  background-image: image-url($file + '.' + $type);
+  
+  @media only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (-moz-min-device-pixel-ratio: 2),
+    only screen and (-o-min-device-pixel-ratio: 2/1),
+    only screen and (min-device-pixel-ratio: 2),
+    only screen and (min-resolution: 192dpi),
+    only screen and (min-resolution: 2dppx){
+    & {
+      background-image: image-url($file + '@2x.' + $type);
+      -webkit-background-size: $width $height;
+      -moz-background-size: $width $height;
+      -o-background-size: $width $height;
+      background-size: $width $height;
+    }
+  }
+}
+
+
 /* Default rules for the body of every page */
 
 * {
@@ -956,7 +979,8 @@ header .search_form {
   }
 
   .tt-dropdown-menu { width: 100%;
-    padding: 0 0 2px 0;
+    position: relative;
+    padding: 0 0 14px 0;
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-top: 0px;
@@ -967,12 +991,27 @@ header .search_form {
     border-bottom-left-radius: 4px;
   }
 
+    .tt-dropdown-menu:after {
+      content: "";
+      display: block;
+      @include background-image-retina("algolia_icon", "png", 50px, 12px);
+      height: 12px;
+      width: 50px;
+      position: absolute;
+      bottom: 1px;
+      right: 4px;
+    }
+
   .tt-suggestion { 
     text-align: left;
     padding: 3px 20px;
     font-size: 1.2em;
     line-height: 24px;
     border-top: 1px solid #e6e6e6;
+    -webkit-transition:background ease-in-out 100ms;
+    -moz-transition:background ease-in-out 100ms;
+    -o-transition:background ease-in-out 100ms;
+    transition:background ease-in-out 100ms;
 
     &:first-child {
       border-top: none;
