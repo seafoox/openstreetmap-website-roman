@@ -3,12 +3,12 @@
 OSM.Search = function(map) {
   $(".search_form input[name=query]")
     .on("input", function(e) {
-      if ($(e.target).val() == "") {
+      if ($(e.target).val() === "") {
         $(".describe_location").fadeIn(100);
       } else {
         $(".describe_location").fadeOut(100);
       }
-    })
+    });
 
   $("#sidebar_content")
     .on("click", ".search_more a", clickSearchMore)
@@ -90,6 +90,7 @@ OSM.Search = function(map) {
   page.pushstate = page.popstate = function(path) {
     var params = querystring.parse(path.substring(path.indexOf('?') + 1));
     $(".search_form input[name=query]").val(params.query);
+    $(".search_form input[name=query]").typeahead('val', params.query);
     OSM.loadSidebarContent(path, page.load);
   };
 
@@ -117,7 +118,7 @@ OSM.Search = function(map) {
 
   page.unload = function() {
     markers.clearLayers();
-    $(".search_form input[name=query]").val("");
+    $(".search_form input[name=query]").typeahead('val', '');
     $(".describe_location").fadeIn(100);
   };
 

@@ -321,6 +321,27 @@ $(document).ready(function () {
       e.preventDefault();
   });
 
+  // Auto-suggest feature (powered by Algolia.com) ---
+  var algolia = new AlgoliaSearch('55D6OYYP5R', '05fdaf769699705158b6385f861df4a0');
+  var index = algolia.initIndex('french_cities');
+
+  var rawTemplate = '<div class="result-wrapper"><span class="icon-wrapper"><i class="icon"></i></span><span class="city">{{{_highlightResult.name.value}}}</span>&nbsp;<span class="country">{{{country}}}</span></div>';
+  var template = Hogan.compile(rawTemplate);
+  
+  $(".search_form input[name=query]").typeahead(null, {
+    source: index.ttAdapter({ hitsPerPage: 5 }),
+    displayKey: 'name',
+    templates: {
+      suggestion: function(hit) {
+        return template.render(hit);
+      }
+    }
+  })
+  .on('typeahead:selected', function(event) {
+    $(event.target).parents('form').trigger('submit');
+    $(event.target).parents('input[name=query]').typeahead("close");
+  });
+
   $(".search_form").on("submit", function(e) {
     e.preventDefault();
     $("header").addClass("closed");
