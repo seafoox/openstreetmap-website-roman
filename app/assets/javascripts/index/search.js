@@ -13,9 +13,9 @@ OSM.Search = function(map) {
   $("#sidebar_content")
     .on("click", ".search_more a", clickSearchMore)
     .on("click", ".search_results_entry a.set_position", clickSearchResult)
-    .on("mouseover", "p.search_results_entry:has(a.set_position)", showSearchResult)
-    .on("mouseout", "p.search_results_entry:has(a.set_position)", hideSearchResult)
-    .on("mousedown", "p.search_results_entry:has(a.set_position)", function () {
+    .on("mouseenter", "p.search_results_entry:has(a.set_position)", showSearchResult)
+    .on("mouseleave", "p.search_results_entry:has(a.set_position)", hideSearchResult)
+    .on("mousedown", "p.search_results_entry:has(a.set_position)", function() {
       var moved = false;
       $(this).one("click", function (e) {
         if (!moved && !$(e.target).is('a')) {
@@ -41,7 +41,14 @@ OSM.Search = function(map) {
   }
 
   function showSearchResult(e) {
+    var $parentElt = $(this).closest("li");
+    var $currentSelectedElt = $(e.target).closest('li').siblings('.selected');
     var marker = $(this).data("marker");
+
+    // Remove the marker from the map if already displayed 
+    if ($currentSelectedElt && $currentSelectedElt.length > 0) {
+      hideSearchResult.call($currentSelectedElt);
+    }
 
     if (!marker) {
       var data = $(this).find("a.set_position").data();
@@ -52,8 +59,31 @@ OSM.Search = function(map) {
     }
 
     markers.addLayer(marker);
+    $parentElt.addClass("selected");
+  }
 
-    $(this).closest("li").addClass("selected");
+  function showFirstSearchResult($html) {
+    if ($html && $html.length > 0)
+    {
+      var $firstResultElt = $("p.search_results_entry:has(a.set_position)", $html).first();
+      var data = $('a.set_position', $firstResultElt).data();
+      var center = L.latLng(data.lat, data.lon);
+      var marker = data.marker || L.marker([data.lat, data.lon], {icon: getUserIcon()});
+
+      // Add a marker on the map that points 
+      // to the suggested location.
+      $firstResultElt.data("marker", marker);
+      markers.addLayer(marker);
+
+      // Refresh the map view
+      if (data.minLon && data.minLat && data.maxLon && data.maxLat) {
+        map.fitBounds([[data.minLat, data.minLon], [data.maxLat, data.maxLon]]);
+      } else {
+        map.setView(center, data.zoom);
+      }
+
+      $firstResultElt.closest("li").addClass("selected");
+    }
   }
 
   function hideSearchResult(e) {
@@ -87,10 +117,14 @@ OSM.Search = function(map) {
 
   var page = {};
 
+  var displayFirstResultOnMap = false;
+
   page.pushstate = page.popstate = function(path) {
+    path = path && decodeURIComponent(path);
     var params = querystring.parse(path.substring(path.indexOf('?') + 1));
     $(".search_form input[name=query]").val(params.query);
     $(".search_form input[name=query]").typeahead('val', params.query);
+    displayFirstResultOnMap = parseInt(params.suggest, 10) ? true : false;
     OSM.loadSidebarContent(path, page.load);
   };
 
@@ -109,6 +143,8 @@ OSM.Search = function(map) {
         },
         success: function(html) {
           entry.html(html);
+          if (displayFirstResultOnMap)
+            showFirstSearchResult(entry.html);
         }
       });
     });

@@ -327,18 +327,21 @@ $(document).ready(function () {
 
   var rawTemplate = '<div class="result-wrapper"><span class="city">{{{_highlightResult.name.value}}}</span>&nbsp;<span class="country">{{{country}}}</span><span class="icon-wrapper"><i class="icon {{{icon_css_class}}}"></i></span></div>';
   var template = Hogan.compile(rawTemplate);
-  
+  var isSuggestSelected = false;
+
   $(".search_form input[name=query]").typeahead(null, {
     source: index.ttAdapter({ hitsPerPage: 5 }),
     displayKey: 'name',
     templates: {
       suggestion: function(hit) {
+        isSuggestSelected = false;
         hit["icon_css_class"] = hit._tags.indexOf("capital") !== -1 ? "icon-capital" : "";
         return template.render(hit);
       }
     }
   })
   .on('typeahead:selected', function(event) {
+    isSuggestSelected = true;
     $(event.target).parents('form').trigger('submit');
     $(event.target).parents('input[name=query]').typeahead("close");
   });
@@ -348,7 +351,8 @@ $(document).ready(function () {
     $("header").addClass("closed");
     var query = $(this).find("input[name=query]").val();
     if (query) {
-      OSM.router.route("/search?query=" + encodeURIComponent(query) + OSM.formatHash(map));
+      var suggestParam = '&suggest=' + (isSuggestSelected ? '1': '0');
+      OSM.router.route("/search?query=" + encodeURIComponent(query) + suggestParam + OSM.formatHash(map));
     } else {
       OSM.router.route("/" + OSM.formatHash(map));
     }
